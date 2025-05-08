@@ -17,7 +17,8 @@ selection=$(printf "%s\n" "${names[@]}" | awk '{print tolower($0)}' | rofi -dmen
 # Case-insensitive match to original name
 for i in "${!names[@]}"; do
   if [[ "${names[i],,}" == "$selection" ]]; then
-    gnome-terminal --working-directory="${dirs[i]}"
+    gnome-terminal --working-directory="${dirs[i]}" # uncomment this and comment the line below if you dont want to open the directory in nvim by default 
+	# gnome-terminal -- /home/godz/.local/nvim-linux-x86_64/bin/nvim "${dirs[i]}" &
     break
   fi
 done
