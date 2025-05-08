@@ -1,27 +1,32 @@
-
 #!/bin/bash
 
-base="$HOME/.config"
+# Get dotfiles from $HOME
+mapfile -t files < <(find "$HOME" -mindepth 1 -maxdepth 1 -type f -name ".*")
 
-# Find all first-level directories and files
-mapfile -t dirs < <(find "$base" -mindepth 1 -maxdepth 1 -type d)
-mapfile -t files < <(find "$base" -mindepth 1 -maxdepth 1 -type f)
+# Get dot-directories from $HOME
+mapfile -t dotdirs < <(find "$HOME" -mindepth 1 -maxdepth 1 -type d -name ".*")
 
-# Extract base folder names
-mapfile -t dir_names < <(for d in "${dirs[@]}"; do basename "$d"; done)
+# Get all directories from ~/.config
+mapfile -t configdirs < <(find "$HOME/.config" -mindepth 1 -maxdepth 1 -type d)
+
+# Merge directory lists
+dirs=("${dotdirs[@]}" "${configdirs[@]}")
+
+# Extract base names
 mapfile -t file_names < <(for f in "${files[@]}"; do basename "$f"; done)
+mapfile -t dir_names < <(for d in "${dirs[@]}"; do basename "$d"; done)
 
-# Combine directories and files into one list (lowercase)
-display_list=("${dir_names[@]}" "${file_names[@]}")
-display_list_lowercase=($(printf "%s\n" "${display_list[@]}" | awk '{print tolower($0)}'))
+# Combine and lowercase
+display_list=("${file_names[@]}" "${dir_names[@]}")
+display_list_lower=($(printf "%s\n" "${display_list[@]}" | awk '{print tolower($0)}'))
 
-# Show the list to the user via rofi (all lowercase)
-selection=$(printf "%s\n" "${display_list_lowercase[@]}" | rofi -dmenu -p "Open Project or Dotfile:")
+# Show in rofi
+selection=$(printf "%s\n" "${display_list_lower[@]}" | rofi -dmenu -p "Open Config:")
 
-# Exit if no selection
+# Exit if nothing selected
 [ -z "$selection" ] && exit
 
-# Check if the selection is a directory or a file
+# Match directory
 for i in "${!dir_names[@]}"; do
   if [[ "${dir_names[i],,}" == "$selection" ]]; then
     gnome-terminal --working-directory="${dirs[i]}" &
@@ -29,10 +34,10 @@ for i in "${!dir_names[@]}"; do
   fi
 done
 
+# Match file
 for i in "${!file_names[@]}"; do
   if [[ "${file_names[i],,}" == "$selection" ]]; then
     gnome-text-editor "${files[i]}" &
     exit
   fi
 done
-
