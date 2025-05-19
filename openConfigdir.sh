@@ -35,6 +35,7 @@ for i in "${!dir_names[@]}"; do
   if [[ "${dir_names[i],,}" == "$selection" ]]; then
     # gnome-terminal --working-directory="${dirs[i]}" & #Uncomment this and comment the below line if you dont want to open the config directory in neovim by default
     gnome-terminal -- /home/godz/.local/nvim-linux-x86_64/bin/nvim "${dirs[i]}" &
+	echo ${dirs[i]}
     exit
   fi
 done
