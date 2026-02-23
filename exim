@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in 
+		get)
+			exercism download --track=javascript --exercise="$2"
+			cd ~/exercism/javascript/"$2"
+			return 1
+			;;
+		install)
+			corepack pnpm install
+			return 1
+			;;
+		test)
+			corepack pnpm test
+			return 1
+			;;
+		lint)
+			corepack pnpm lint
+			return 1
+			;;
+		watch)
+			corepack pnpm watch
+			return 1 
+			;;
+		submit)
+			exercism submit 
+			return 1
+			;;
+		*)
+			echo "ya thats not how it works figure it out yourself bih"
+			return 1
+	esac
+done
+
